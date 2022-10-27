@@ -1,0 +1,89 @@
+[[mac-os-installation-process]]
+=== macOS(R) installation process
+
+[.procedure]
+====
+[TIP]
+======
+Hugo version 0.90 or higher must be used
+======
+
+. Install these packages using link:https://brew.sh/[Homebrew].
++
+[source,shell]
+....
+$ brew install hugo ruby git bmake asciidoctor
+....
++
+. Add Ruby and binaries installed by gem to the PATH.
++
+[source,shell]
+....
+$ echo 'export GEM_PATH="/usr/local/lib/ruby/gems/3.1.0/bin"' >> ~/.zshrc
+$ echo 'export PATH="$GEM_PATH:/usr/local/opt/ruby/bin:$PATH"' >> ~/.zshrc
+....
++
+. Install the rouge package using link:https://rubygems.org/[RubyGem].
++
+[source,shell]
+....
+$ gem install rouge
+....
++
+. Install a local working copy of the documentation from the FreeBSD repository in [.filename]#~/doc# (see crossref:working-copy[working-copy,The Working Copy]).
++
+[source,shell]
+....
+$ git clone https://git.FreeBSD.org/doc.git ~/doc
+....
++
+. Edit the documentation files that require changes. If a file needs major changes, consult the mailing list for input.
++
+Review the output and edit the files to fix any problems shown, then rerun the command to find any remaining problems.
+Repeat until all of the errors are resolved.
++
+. XXX Patch Makefile. XXX
++
+[source,shell]
+....
+$ sed -i "" -e "s|\${LOCALBASE}/bin/rougify|\${GEM_PATH}/rougify|" ~/doc/documentation/Makefile
+....
++
+. Always build and test the changes before submitting them. Running `bmake` in the top-level directory of the documentation will generate that documentation in HTML format.
++
+[source,shell]
+....
+$ bmake run
+....
+. Add all the files with `git add .`, then review the diff with `git diff`. For example:
++
+[source,shell]
+....
+% git add .
+% git diff --staged
+....
++
+Make sure that all required files are included, then commit the change to your local branch and generate a patch with `git format-patch`
++
+[source,shell]
+....
+% git commit
+% git format-patch origin/main
+....
++
+Patch generated with `git format-patch` will include author identity and email addresses,
+making it easier for developers to apply (with `git am`) and give proper credit.
++
+[IMPORTANT]
+======
+To make it easier for committers to apply the patch on their working copy of the documentation tree,
+please generate the [.filename]#.diff# from the base of your documentation tree.
+======
++
+. Submit the patch or diff file using the web-based https://bugs.FreeBSD.org/bugzilla/enter_bug.cgi?product=Documentation[Problem Report] system.
+If using the web form, enter a Summary of _short description of problem_.
+Select the Component `Documentation`.
+In the Description field, enter a short description of the problem in the _Summary_ field and add _patch_ to the _Keywords_ field.
+Use the btn:[Add an attachment] button to attach the patch or diff file.
+Finally, use the btn:[Submit Bug] button to submit your diff to the problem report system.
+====

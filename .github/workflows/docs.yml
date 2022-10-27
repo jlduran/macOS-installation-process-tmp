@@ -1,0 +1,38 @@
+name: docs
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  Run-macOS-installation-process:
+    name: macOS installation process
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install these packages using Homebrew
+        run: brew install hugo ruby git bmake asciidoctor
+      - name: Add ruby to the path
+        run: |
+          echo 'export GEM_PATH="/usr/local/lib/ruby/gems/3.1.0/bin"' >> ~/.bashrc
+          echo 'export PATH="$GEM_PATH:/usr/local/opt/ruby/bin:$PATH"' >> ~/.bashrc
+          . ~/.bashrc
+      - name: Install the rouge package using RubyGem
+        run: gem install rouge
+      - name: Install a local working copy of the documentation from the FreeBSD repository
+        run: git clone https://git.FreeBSD.org/doc.git ~/doc
+      - name: XXX Patch Makefile
+        run: |
+          cd ~/doc/documentation
+          sed -i "" -e "s|\${LOCALBASE}/bin/rougify|\${GEM_PATH}/rougify|" Makefile
+      - name: Run bmake in the top-level directory of the documentation
+        run: |
+          cd ~/doc/documentation
+          bmake build
+      - uses: actions/upload-artifact@master
+        with:
+          name: documentation
+          path: ~/doc/documentation/public
