@@ -12,7 +12,7 @@ Hugo version 0.90 or higher must be used
 +
 [source,shell]
 ....
-$ brew install hugo ruby git bmake asciidoctor
+$ brew install hugo ruby git bmake
 ....
 +
 . Add Ruby and binaries installed by gem to the PATH.
@@ -27,7 +27,7 @@ $ echo 'export PATH="$GEM_PATH:/usr/local/opt/ruby/bin:$PATH"' >> ~/.zshrc
 +
 [source,shell]
 ....
-$ gem install rouge
+$ gem install rouge asciidoctor asciidoctor-pdf asciidoctor-epub3
 ....
 +
 . Install a local working copy of the documentation from the FreeBSD repository in [.filename]#~/doc# (see crossref:working-copy[working-copy,The Working Copy]).
@@ -42,18 +42,11 @@ $ git clone https://git.FreeBSD.org/doc.git ~/doc
 Review the output and edit the files to fix any problems shown, then rerun the command to find any remaining problems.
 Repeat until all of the errors are resolved.
 +
-. XXX Patch Makefile. XXX
-+
-[source,shell]
-....
-$ sed -i "" -e "s|\${LOCALBASE}/bin/rougify|\${GEM_PATH}/rougify|" ~/doc/documentation/Makefile
-....
-+
 . Always build and test the changes before submitting them. Running `bmake` in the top-level directory of the documentation will generate that documentation in HTML format.
 +
 [source,shell]
 ....
-$ bmake run
+$ bmake run ASCIIDOCTOR_CMD=${GEM_PATH}/asciidoctor ROUGIFY_CMD=${GEM_PATH}/rougify
 ....
 . Add all the files with `git add .`, then review the diff with `git diff`. For example:
 +
